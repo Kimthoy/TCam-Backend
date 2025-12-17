@@ -2,58 +2,58 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Job extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'title',
-        'slug',
-        'company',
+        'job_title',
+        'job_slug',
         'location',
-        'salary',
-        'job_type',
-        'experience',
-        'description',
-        'requirements',
-        'benefits',
-        'apply_email',
-        'apply_link',
-        'deadline',
-        'is_active',
-        'is_closed'
+        'closing_date',
+        'hiring_number',
+        'job_summary',
+        'status',
     ];
 
-    protected $casts = [
-        'deadline'   => 'date',
-        'is_active'  => 'boolean',
-        'is_closed'  => 'boolean',
-    ];
-
-    protected $appends = ['feature_image_url'];
-
-    public function getFeatureImageUrlAttribute(): ?string
+    /**
+     * ONE-TO-ONE relationships
+     */
+    public function qualification()
     {
-        if (!$this->feature_image ?? null) {
-            return null;
-        }
-
-        return Storage::disk('public')->url($this->feature_image);
+        return $this->hasOne(JobQualification::class);
     }
 
-    // Scope: Only active, not closed, and deadline not passed
-    public function scopeActive($query)
+    public function application_info()
     {
-        return $query->where('is_active', true)
-            ->where('is_closed', false)
-            ->where(function ($q) {
-                $q->whereNull('deadline')
-                    ->orWhere('deadline', '>=', today());
-            });
+        return $this->hasOne(JobApplicationInfo::class);
     }
+
+    /**
+     * ONE-TO-MANY relationships (lists)
+     */
+    public function responsibilities()
+    {
+        return $this->hasMany(JobResponsibility::class);
+    }
+
+    public function benefits()
+    {
+        return $this->hasMany(JobBenefit::class);
+    }
+
+    public function certifications()
+    {
+        return $this->hasMany(JobCertification::class);
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(JobPersonalAttribute::class);
+    }
+   
 }

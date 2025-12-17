@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutUsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\CustomerCategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\JobController;
+use App\Http\Controllers\Admin\ManageCVController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\ProductController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\CLient\ApplyCVController;
 use App\Http\Controllers\PublicHomeController;
 
 // ==========================
@@ -31,10 +35,19 @@ Route::get('/posts/public', [PostController::class, 'publicIndex']);
 Route::get('/services/public', [ServiceController::class, 'publicIndex']);
 Route::get('/customers/public', [CustomerController::class, 'publicIndex']);
 Route::get('/partners/public', [PartnerController::class, 'publicIndex']);
+Route::get('/jobs/public/{id}', [JobController::class, 'show']);
+
+Route::get('/jobs/public', [JobController::class, 'index']);
+Route::get('/about_us/public', [AboutUsController::class, 'index']);
 
 Route::get('/products/public', [ProductController::class, 'publicIndex']);
 Route::get('/products/public/{id}', [ProductController::class, 'publicShow']);
  Route::post('contact-messages', [ContactMessageController::class, 'store']);
+ 
+
+
+//apply job for client
+Route::post('/jobs/{job}/apply', [ApplyCVController::class, 'store']);
 
 // ==========================
 // AUTHENTICATED USER ROUTES
@@ -51,6 +64,11 @@ Route::middleware('auth:api')->group(function () {
 // ==========================
 Route::middleware(['auth:api'])->prefix('admin')->group(function () {
 
+    Route::get('jobs', [JobController::class, 'index']);
+    Route::get('jobs/{id}', [JobController::class, 'show']);
+    Route::post('jobs', [JobController::class, 'store']);
+    Route::put('jobs/{id}', [JobController::class, 'update']);
+    Route::delete('jobs/{id}', [JobController::class, 'destroy']);
     // Users
     Route::apiResource('users', UserController::class);
     Route::post('users/{user}/photo', [UserController::class, 'uploadPhoto']);
@@ -104,6 +122,13 @@ Route::middleware(['auth:api'])->prefix('admin')->group(function () {
     Route::post('jobs/{id}/restore', [JobController::class, 'restore']);
     Route::delete('jobs/{id}/force', [JobController::class, 'forceDelete']);
 
+    //Careers
+    Route::apiResource('careers', CareerController::class);
+  
+    Route::post('careers/{id}/restore', [CareerController::class, 'restore']);
+    Route::delete('careers/{id}/force', [CareerController::class, 'forceDelete']);
+
+
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/dashboard/activity', [DashboardController::class, 'activity']);
@@ -111,4 +136,19 @@ Route::middleware(['auth:api'])->prefix('admin')->group(function () {
     Route::get('settings', [SettingsController::class, 'index']);
     Route::put('settings', [SettingsController::class, 'update']);
     Route::post('settings/refresh-cache', [SettingsController::class, 'refreshCache']);
+
+
+    //Manage apply cv 
+    Route::get('/job-applications', [ManageCVController::class, 'index']);
+    Route::get('/job-applications/{id}', [ManageCVController::class, 'show']);
+    Route::delete('/job-applications/{id}', [ManageCVController::class, 'destroy']);
+    Route::put('/job-applications/{id}/status',[ManageCVController::class, 'updateStatus']);
+
+
+    Route::get('about_us', [AboutUsController::class, 'index']);
+    Route::get('about_us/{id}', [AboutUsController::class, 'show']);
+    Route::post('about_us', [AboutUsController::class, 'store']);
+    Route::put('about_us/{id}', [AboutUsController::class, 'update']); // use POST for FormData
+    Route::delete('about_us/{id}', [AboutUsController::class, 'destroy']);
+
 });
