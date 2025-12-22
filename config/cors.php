@@ -10,11 +10,13 @@ return [
         'http://127.0.0.1:5173',
         'http://localhost:5174',
         'http://127.0.0.1:5174',
+        'http://10.53.55.20:5173',
     ],
 
     'allowed_origins_patterns' => [
         '/^http:\/\/localhost:\d+$/',
         '/^http:\/\/127\.0\.0\.1:\d+$/',
+        '/^http:\/\/10\.53\.55\.20:\d+$/',
     ],
 
     'allowed_headers' => ['*'],

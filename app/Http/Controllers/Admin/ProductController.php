@@ -68,9 +68,10 @@ class ProductController extends Controller
 
         $data = $request->validate([
             'title'             => 'required|string|max:255',
-            'category_id'       => 'required|exists:product_categories,id',
+            'category_id'       => 'nullable|exists:product_categories,id',
             'short_description' => 'nullable|string',
             'description'       => 'nullable|string',
+            'website_link'       => 'nullable|string',
             'price'              => 'nullable|numeric|min:0',
             'is_published'      => 'boolean',
             'feature_image'     => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120', // 5MB
@@ -82,6 +83,7 @@ class ProductController extends Controller
             'category_id'       => $data['category_id'],
             'short_description' => $data['short_description'],
             'description'       => $data['description'],
+            'website_link'       => $data['website_link'],
             'price'              => $data['price'],
             'is_published'      => $data['is_published'] ?? true,
         ]);
@@ -111,6 +113,7 @@ class ProductController extends Controller
             'category_id'       => 'sometimes|required|exists:product_categories,id',
             'short_description' => 'nullable|string',
             'description'       => 'nullable|string',
+            'website_link'       => 'nullable|string',
             'price'              => 'nullable|numeric|min:0',
             'is_published'      => 'boolean',
             'feature_image'     => 'sometimes|image|mimes:jpg,jpeg,png,webp,gif|max:5120',

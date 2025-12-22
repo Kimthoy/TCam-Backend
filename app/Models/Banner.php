@@ -9,14 +9,14 @@ class Banner extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'title',
-        'subtitle',
-        'image',
-        'link',
-        'status',
-        'page', 
-    ];
+        protected $fillable = [
+            'title',
+            'subtitle',
+            'image',
+            'link',
+            'status',
+            'page', 
+        ];
 
     protected $casts = [
         'status' => 'boolean',

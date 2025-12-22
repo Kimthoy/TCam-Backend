@@ -58,7 +58,7 @@ class BannerController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'link'     => 'nullable|url|max:500',
             'status'   => 'nullable|boolean',
-            'page'     => ['required', Rule::in(['home', 'about', 'services', 'products', 'contact','partners','careers', 'blog'])],
+            'page'     => ['required', Rule::in(['home', 'about','events', 'solutions', 'products', 'contact','partners','careers', 'blog','customers'])],
             'image'    => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
         ]);
 
@@ -90,7 +90,7 @@ class BannerController extends Controller
             'subtitle' => 'sometimes|nullable|string|max:255',
             'link'     => 'sometimes|nullable|url|max:500',
             'status'   => 'sometimes|boolean',
-            'page'     => ['sometimes', 'required', Rule::in(['home', 'about', 'services', 'products', 'contact','partners','jobs', 'blog'])],
+            'page'     => ['sometimes', 'required', Rule::in(['home', 'about', 'solutions', 'products', 'contact','partners','jobs','events', 'blog','customers'])],
             'image'    => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
@@ -149,7 +149,7 @@ class BannerController extends Controller
     {
         $page = $request->get('page', 'home');
 
-        $allowedPages = ['home', 'about', 'services', 'products', 'contact','partners','jobs', 'blog'];
+        $allowedPages = ['home', 'about', 'solutions', 'products', 'contact','events','partners','jobs', 'blog','customers'];
         if (!in_array($page, $allowedPages)) {
             $page = 'home';
         }

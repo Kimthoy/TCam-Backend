@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AboutUsController;
+use App\Http\Controllers\Admin\AdminLocationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\CustomerCategoryController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\IndustryController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\ManageCVController;
 use App\Http\Controllers\Admin\PartnerController;
@@ -21,37 +24,31 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\CLient\ApplyCVController;
-use App\Http\Controllers\PublicHomeController;
+use App\Http\Controllers\Admin\WidgetController;
+use App\Http\Controllers\Admin\SupportSystemController;
+use App\Http\Controllers\Admin\WhyJoinUsController;
 
-// ==========================
-// PUBLIC ROUTES
-// ==========================
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('/contact', [ContactMessageController::class, 'store']);
-
+Route::get('public/events', [EventController::class, 'index']);
 Route::get('/banners/public', [BannerController::class, 'publicBanners']);
 Route::get('/posts/public', [PostController::class, 'publicIndex']);
 Route::get('/services/public', [ServiceController::class, 'publicIndex']);
 Route::get('/customers/public', [CustomerController::class, 'publicIndex']);
 Route::get('/partners/public', [PartnerController::class, 'publicIndex']);
 Route::get('/jobs/public/{id}', [JobController::class, 'show']);
-
+Route::get('/public/support', [SupportSystemController::class, 'index']);
 Route::get('/jobs/public', [JobController::class, 'index']);
 Route::get('/about_us/public', [AboutUsController::class, 'index']);
-
+Route::get('/public/location-system', [AdminLocationController::class, 'index']);
 Route::get('/products/public', [ProductController::class, 'publicIndex']);
 Route::get('/products/public/{id}', [ProductController::class, 'publicShow']);
- Route::post('contact-messages', [ContactMessageController::class, 'store']);
- 
-
-
-//apply job for client
+Route::post('/contact-messages', [ContactMessageController::class, 'store']);
+Route::get('/public/widgets', [WidgetController::class, 'index']);
 Route::post('/jobs/{job}/apply', [ApplyCVController::class, 'store']);
-
-// ==========================
-// AUTHENTICATED USER ROUTES
-// ==========================
+Route::get('/public/industries', [IndustryController::class, 'index']);
+Route::get('public/whyjoinus', [WhyJoinUsController::class, 'index']);
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
@@ -59,9 +56,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('user/password', [AuthController::class, 'changePassword']);
 });
 
-// ==========================
-// ADMIN ROUTES
-// ==========================
+
+
 Route::middleware(['auth:api'])->prefix('admin')->group(function () {
 
     Route::get('jobs', [JobController::class, 'index']);
@@ -148,7 +144,54 @@ Route::middleware(['auth:api'])->prefix('admin')->group(function () {
     Route::get('about_us', [AboutUsController::class, 'index']);
     Route::get('about_us/{id}', [AboutUsController::class, 'show']);
     Route::post('about_us', [AboutUsController::class, 'store']);
-    Route::put('about_us/{id}', [AboutUsController::class, 'update']); // use POST for FormData
+    Route::put('about_us/{id}', [AboutUsController::class, 'update']); 
     Route::delete('about_us/{id}', [AboutUsController::class, 'destroy']);
+
+
+    Route::get('widgets', [WidgetController::class, 'index']);
+    Route::post('widgets', [WidgetController::class, 'store']);
+    Route::get('widgets/{id}', [WidgetController::class, 'show']);
+    Route::put('widgets/{id}', [WidgetController::class, 'update']);
+    Route::delete('widgets/{id}', [WidgetController::class, 'destroy']);
+
+
+    // Full CRUD for support system
+Route::post('/support-system', [SupportSystemController::class, 'store']);
+Route::get('/support-system', [SupportSystemController::class, 'index']);
+Route::get('/support-system/{id}', [SupportSystemController::class, 'show']);
+Route::put('/support-system/{id}', [SupportSystemController::class, 'update']);
+Route::delete('/support-system/{id}', [SupportSystemController::class, 'destroy']); // delete all
+
+// Individual deletes
+Route::delete('/support-plan/{id}', [SupportSystemController::class, 'destroyPlan']);
+Route::delete('/support-option/{id}', [SupportSystemController::class, 'destroyOption']);
+Route::delete('/support-feature/{id}', [SupportSystemController::class, 'destroyFeature']);
+
+
+
+    Route::post('/location-system', [AdminLocationController::class, 'store']);
+    Route::get('/location-system', [AdminLocationController::class, 'index']);
+    Route::put('/location-system/{id}', [AdminLocationController::class, 'update']);
+    Route::delete('/location-system/{id}', [AdminLocationController::class, 'destroy']);
+
+
+    Route::post('/events', [EventController::class, 'store']);
+    Route::get('/events', [EventController::class, 'index']);
+    Route::put('/events/{id}', [EventController::class, 'update']);
+    Route::delete('/events/{id}', [EventController::class, 'destroy']);
+
+
+    Route::post('/industries', [IndustryController::class, 'store']);    
+    Route::get('/industries', [IndustryController::class, 'index']);
+    Route::put('/industries/{id}', [IndustryController::class, 'update']);
+    Route::delete('/industries/{id}', [IndustryController::class, 'destroy']);
+    Route::get('/industries/{id}', [IndustryController::class, 'show']);
+
+
+    Route::post('/whyjoinus', [WhyJoinUsController::class, 'store']);    
+    Route::get('/whyjoinus', [WhyJoinUsController::class, 'index']);
+    Route::put('/whyjoinus/{id}', [WhyJoinUsController::class, 'update']);
+    Route::delete('/whyjoinus/{id}', [WhyJoinUsController::class, 'destroy']);
+    Route::get('/whyjoinus/{id}', [WhyJoinUsController::class, 'show']);
 
 });
