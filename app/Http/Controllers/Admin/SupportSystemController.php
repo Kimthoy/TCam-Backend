@@ -14,13 +14,14 @@ class SupportSystemController extends Controller
 {
     // GET: fetch full support system
     public function index()
-    {
-        return response()->json([
-            'section' => SupportSection::where('is_active', true)->first(),
-            'plans'   => SupportPlan::with('features')->where('is_active', true)->orderBy('display_order')->get(),
-            'options' => SupportOption::where('is_active', true)->orderBy('display_order')->get(),
-        ]);
-    }
+{
+    return response()->json([
+        'section' => SupportSection::where('is_active', true)->first(),
+        'plans'   => SupportPlan::with('features')->where('is_active', true)->orderBy('display_order')->get(),
+        'options' => SupportOption::where('is_active', true)->orderBy('display_order')->get(),
+    ]);
+}
+
 
     // CREATE / UPDATE
     public function store(Request $request)

@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\IndustryController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\ManageCVController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PartnerWithUsController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -48,7 +49,8 @@ Route::post('/contact-messages', [ContactMessageController::class, 'store']);
 Route::get('/public/widgets', [WidgetController::class, 'index']);
 Route::post('/jobs/{job}/apply', [ApplyCVController::class, 'store']);
 Route::get('/public/industries', [IndustryController::class, 'index']);
-Route::get('public/whyjoinus', [WhyJoinUsController::class, 'index']);
+Route::get('/public/whyjoinus', [WhyJoinUsController::class, 'index']);
+Route::get('/public/partner-with-us', [PartnerWithUsController::class, 'index']);
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
@@ -194,4 +196,16 @@ Route::delete('/support-feature/{id}', [SupportSystemController::class, 'destroy
     Route::delete('/whyjoinus/{id}', [WhyJoinUsController::class, 'destroy']);
     Route::get('/whyjoinus/{id}', [WhyJoinUsController::class, 'show']);
 
+
+
+
+    Route::get('/partner-with-us', [PartnerWithUsController::class, 'index']);
+    Route::post('/partner-with-us', [PartnerWithUsController::class, 'store']);       
+    Route::get('/partner-with-us/{section}', [PartnerWithUsController::class, 'show']); 
+    Route::put('/partner-with-us/{section}', [PartnerWithUsController::class, 'update']); 
+    Route::delete('/partner-with-us/{section}', [PartnerWithUsController::class, 'destroy']);
+    Route::post('/partner-with-us/{section}/cards', [PartnerWithUsController::class, 'storeCard']); 
+    Route::get('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'showCard']);      
+    Route::put('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'updateCard']);  
+    Route::delete('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'destroyCard']);
 });

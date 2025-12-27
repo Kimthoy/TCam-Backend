@@ -3,38 +3,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-
 class Event extends Model
 {
-    protected $table = 'events';
-
     protected $fillable = [
-        'title',
-        'subtitle',
-        'event_date',
-        'location',
-        'category',
-        'poster_image',
-        'description',
-        'participants',
-        'certifications',
-        'certificates',
-        'is_published',
+        'title', 'subtitle', 'event_date', 'location', 'category',
+        'poster_image', 'description', 'participants', 'certifications', 'certificates', 'is_published'
     ];
 
     protected $casts = [
-        'event_date'     => 'date',
-        'participants'   => 'array',
+        'participants' => 'array',
         'certifications' => 'array',
-        'certificates'   => 'array',
-        'is_published'   => 'boolean',
+        'certificates' => 'array',
+        'is_published' => 'boolean',
+        'event_date' => 'date',
     ];
 
-    // Accessor to get full URL
-    public function getPosterImageUrlAttribute(): ?string
+    // Optional: Add poster_image_url accessor
+    public function getPosterImageUrlAttribute()
     {
-        return $this->poster_image
-            ? Storage::disk('public')->url($this->poster_image)
-            : null;
+        return $this->poster_image ? asset("storage/{$this->poster_image}") : null;
     }
 }
