@@ -34,4 +34,9 @@ class Product extends Model
 
         return Storage::disk('public')->url($this->feature_image);
     }
+
+     public function subProducts()
+    {
+        return $this->hasMany(SubProduct::class);
+    }
 }

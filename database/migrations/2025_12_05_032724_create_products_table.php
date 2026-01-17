@@ -19,9 +19,10 @@ return new class extends Migration {
             $table->decimal('price', 12, 2)->nullable();
             $table->string('feature_image')->nullable(); // e.g. uploads/products/123.jpg
             $table->boolean('is_published')->default(true);
-            $table->softDeletes(); // deleted_at
+            $table->softDeletes();
             $table->timestamps();
 
+            
             $table->index('is_published');
             $table->index('category_id');
         });

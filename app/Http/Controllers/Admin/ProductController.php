@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\SubProduct;
 
 class ProductController extends Controller
 {
@@ -51,6 +52,21 @@ class ProductController extends Controller
             $query->paginate($perPage)->appends($request->query())
         );
     }
+
+
+public function subProducts($productId)
+{
+    // Eager load images and properties
+    $subs = SubProduct::with(['images', 'properties'])
+        ->where('product_id', $productId)
+        ->get();
+
+    // Always wrap in 'data'
+    return response()->json([
+        'data' => $subs
+    ]);
+}
+
     // SHOW SINGLE
     public function show(Request $request, Product $product)
     {

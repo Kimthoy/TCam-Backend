@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\RequestDemoController;
+use App\Http\Controllers\Admin\SubProductController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\CLient\ApplyCVController;
@@ -50,6 +52,10 @@ Route::get('/public/widgets', [WidgetController::class, 'index']);
 Route::post('/jobs/{job}/apply', [ApplyCVController::class, 'store']);
 Route::get('/public/industries', [IndustryController::class, 'index']);
 Route::get('/public/whyjoinus', [WhyJoinUsController::class, 'index']);
+
+Route::post('public/request-demo', [RequestDemoController::class, 'store']);    
+Route::get('/products/{id}/sub-products', [ProductController::class, 'subProducts']);
+ Route::get('/public/sub-products/{id}', [SubProductController::class, 'show']);
 Route::get('/public/partner-with-us', [PartnerWithUsController::class, 'index']);
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
@@ -175,6 +181,10 @@ Route::delete('/support-feature/{id}', [SupportSystemController::class, 'destroy
     Route::get('/location-system', [AdminLocationController::class, 'index']);
     Route::put('/location-system/{id}', [AdminLocationController::class, 'update']);
     Route::delete('/location-system/{id}', [AdminLocationController::class, 'destroy']);
+    Route::delete('/location-system/office/{id}', [AdminLocationController::class, 'destroyOffice']);
+    Route::delete('/location-system/email/{id}', [AdminLocationController::class, 'destroyEmail']);
+    Route::delete('/location-system/phone/{id}', [AdminLocationController::class, 'destroyPhone']);
+    Route::delete('/location-system/website/{id}', [AdminLocationController::class, 'destroyWebsite']);
 
 
     Route::post('/events', [EventController::class, 'store']);
@@ -208,4 +218,19 @@ Route::delete('/support-feature/{id}', [SupportSystemController::class, 'destroy
     Route::get('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'showCard']);      
     Route::put('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'updateCard']);  
     Route::delete('/partner-with-us/cards/{card}', [PartnerWithUsController::class, 'destroyCard']);
+
+
+    
+    Route::get('/request-demos', [RequestDemoController::class, 'index']);
+    Route::put('/request-demos/{id}', [RequestDemoController::class, 'update']);
+    Route::delete('/request-demos/{id}', [RequestDemoController::class, 'destroy']);
+    Route::get('/request-demos/{id}', [RequestDemoController::class, 'show']);
+    Route::post('/request-demos/{id}/status', [RequestDemoController::class, 'updateStatus']);
+
+
+    Route::get('sub-products', [SubProductController::class, 'index']);
+    Route::get('sub-products/{id}', [SubProductController::class, 'show']);
+    Route::post('sub-products', [SubProductController::class, 'store']);
+    Route::put('sub-products/{id}', [SubProductController::class, 'update']);
+    Route::delete('sub-products/{id}', [SubProductController::class, 'destroy']);
 });

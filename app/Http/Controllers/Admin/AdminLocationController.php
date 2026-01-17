@@ -152,10 +152,59 @@ class AdminLocationController extends Controller
     /**
      * Delete a country and cascade delete offices and contacts.
      */
-    public function destroy(Country $country)
-    {
-        $country->delete();
+   public function destroy($id)
+{
+    // Find the country by ID
+    $country = Country::find($id);
 
-        return response()->json(['message' => 'Country and all related offices deleted successfully']);
+    if (!$country) {
+        return response()->json(['message' => 'Country not found'], 404);
     }
+
+    // Delete the country (and cascade delete related offices if set up)
+    $country->delete();
+
+    return response()->json([
+        'message' => 'Country and all related offices deleted successfully'
+    ]);
+}
+public function destroyOffice($id)
+{
+    $office = Office::find($id);
+
+    if (!$office) {
+        return response()->json(['message' => 'Office not found'], 404);
+    }
+
+    $office->delete();
+
+    return response()->json(['message' => 'Office deleted successfully']);
+}
+public function destroyEmail($id)
+{
+    $email = OfficeEmail::find($id); // Assuming you have Email model
+
+    if (!$email) {
+        return response()->json(['message' => 'Email not found'], 404);
+    }
+
+    $email->delete();
+
+    return response()->json(['message' => 'Email deleted successfully']);
+}
+public function destroyPhone($id)
+{
+    $phone = OfficePhone::find($id);
+    if (!$phone) return response()->json(['message' => 'Phone not found'], 404);
+    $phone->delete();
+    return response()->json(['message' => 'Phone deleted successfully']);
+}
+public function destroyWebsite($id)
+{
+    $website = OfficeWebsite::find($id);
+    if (!$website) return response()->json(['message' => 'Website not found'], 404);
+    $website->delete();
+    return response()->json(['message' => 'Website deleted successfully']);
+}
+
 }
