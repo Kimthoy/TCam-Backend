@@ -13,20 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
 
-        ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware): void {
 
-        // Register middleware aliases (use simple alias keys - no colon)
+        // ✅ Middleware aliases (NO throttle)
         $middleware->alias([
-            'auth'       => \Illuminate\Auth\Middleware\Authenticate::class,
-           
-            'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-            'is_admin'   => \App\Http\Middleware\IsAdmin::class,
+            'auth'     => \Illuminate\Auth\Middleware\Authenticate::class,
+            'is_admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
 
+        // ✅ API middleware group (NO throttle)
         $middleware->api([
-          
-            // replace 'throttle:api' with a numeric limit:
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })

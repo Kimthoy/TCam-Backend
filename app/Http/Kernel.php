@@ -26,19 +26,20 @@ class Kernel extends HttpKernel
      * Middleware groups
      */
     protected $middlewareGroups = [
-        'web' => [
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-        ],
+    'web' => [
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    ],
 
-        // ✅ API group WITHOUT throttle (LOCAL)
-        'api' => [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
-    ];
+    // ✅ API group WITHOUT throttle
+    'api' => [
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
+];
+
 
     /**
      * Route middleware
