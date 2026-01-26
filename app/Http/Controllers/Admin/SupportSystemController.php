@@ -3,28 +3,104 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\SupportSection;
 use App\Models\SupportPlan;
 use App\Models\SupportPlanFeature;
 use App\Models\SupportOption;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SupportSystemController extends Controller
 {
-    // GET: fetch full support system
+    // LIST
     public function index()
-{
-    return response()->json([
-        'section' => SupportSection::where('is_active', true)->first(),
-        'plans'   => SupportPlan::with('features')->where('is_active', true)->orderBy('display_order')->get(),
-        'options' => SupportOption::where('is_active', true)->orderBy('display_order')->get(),
-    ]);
-}
+    {
+        $section = SupportSection::first();
+        $plans = SupportPlan::with('features')->orderBy('display_order')->get();
+        $options = SupportOption::orderBy('display_order')->get();
 
+        return response()->json([
+            'section' => $section,
+            'plans' => $plans,
+            'options' => $options,
+        ]);
+    }
 
-    // CREATE / UPDATE
+    // GET BY ID
+    public function show($id)
+    {
+        $section = SupportSection::first();
+        $plan = SupportPlan::with('features')->findOrFail($id);
+        $options = SupportOption::orderBy('display_order')->get();
+
+        return response()->json([
+            'section' => $section,
+            'plan' => $plan,
+            'options' => $options,
+        ]);
+    }
+
+    // CREATE / UPDATE (works for both)
     public function store(Request $request)
+    {
+        return $this->saveSupport($request);
+    }
+
+    // UPDATE
+    public function update(Request $request, $id)
+    {
+        return $this->saveSupport($request, $id);
+    }
+
+    // DELETE ALL
+    public function destroy($id)
+    {
+        SupportSection::where('id', $id)->delete();
+        SupportPlan::where('support_section_id', $id)->delete();
+        SupportOption::where('support_section_id', $id)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Support system deleted',
+        ]);
+    }
+
+    // DELETE PLAN
+    public function destroyPlan($id)
+    {
+        SupportPlan::where('id', $id)->delete();
+        SupportPlanFeature::where('support_plan_id', $id)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Plan deleted',
+        ]);
+    }
+
+    // DELETE OPTION
+    public function destroyOption($id)
+    {
+        SupportOption::where('id', $id)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Option deleted',
+        ]);
+    }
+
+    // DELETE FEATURE
+    public function destroyFeature($id)
+    {
+        SupportPlanFeature::where('id', $id)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Feature deleted',
+        ]);
+    }
+
+    // COMMON SAVE FUNCTION
+    private function saveSupport(Request $request, $id = null)
     {
         $request->validate([
             'section.section_title'       => 'required|string|max:255',
@@ -42,7 +118,7 @@ class SupportSystemController extends Controller
 
         DB::transaction(function () use ($request) {
 
-            // ------------------ SECTION ------------------
+            // SECTION
             $section = SupportSection::first();
             if ($section) {
                 $section->update([
@@ -60,7 +136,7 @@ class SupportSystemController extends Controller
                 ]);
             }
 
-            // ------------------ PLANS ------------------
+            // PLANS
             $existingPlanIds = SupportPlan::pluck('id')->toArray();
             $incomingPlanIds = array_column($request->plans, 'id');
             $toDeletePlans = array_diff($existingPlanIds, $incomingPlanIds);
@@ -68,39 +144,37 @@ class SupportSystemController extends Controller
 
             foreach ($request->plans as $planData) {
                 if (!empty($planData['id'])) {
-                    // Update existing plan
                     $plan = SupportPlan::find($planData['id']);
                     $plan->update([
-                        'plan_name'                       => $planData['plan_name'],
-                        'badge_color'                     => $planData['badge_color'] ?? null,
-                        'support_hours_label'             => $planData['support_hours_label'],
-                        'support_coverage'                => $planData['support_coverage'],
-                        'include_holidays'                => $planData['include_holidays'] ?? false,
-                        'exclude_holidays'                => $planData['exclude_holidays'] ?? false,
+                        'plan_name'            => $planData['plan_name'],
+                        'badge_color'          => $planData['badge_color'] ?? null,
+                        'support_hours_label'  => $planData['support_hours_label'],
+                        'support_coverage'     => $planData['support_coverage'],
+                        'include_holidays'     => $planData['include_holidays'] ?? false,
+                        'exclude_holidays'     => $planData['exclude_holidays'] ?? false,
                         'preventive_maintenance_per_year' => $planData['preventive_maintenance_per_year'] ?? 0,
-                        'case_support'                    => $planData['case_support'] ?? 'Unlimited case support',
-                        'cta_text'                        => $planData['cta_text'] ?? 'Contact Now',
-                        'display_order'                   => $planData['display_order'] ?? 0,
-                        'is_active'                       => true,
+                        'case_support'         => $planData['case_support'] ?? 'Unlimited case support',
+                        'cta_text'             => $planData['cta_text'] ?? 'Contact Now',
+                        'display_order'        => $planData['display_order'] ?? 0,
+                        'is_active'            => true,
                     ]);
                 } else {
-                    // Create new plan
                     $plan = SupportPlan::create([
-                        'plan_name'                       => $planData['plan_name'],
-                        'badge_color'                     => $planData['badge_color'] ?? null,
-                        'support_hours_label'             => $planData['support_hours_label'],
-                        'support_coverage'                => $planData['support_coverage'],
-                        'include_holidays'                => $planData['include_holidays'] ?? false,
-                        'exclude_holidays'                => $planData['exclude_holidays'] ?? false,
+                        'plan_name'            => $planData['plan_name'],
+                        'badge_color'          => $planData['badge_color'] ?? null,
+                        'support_hours_label'  => $planData['support_hours_label'],
+                        'support_coverage'     => $planData['support_coverage'],
+                        'include_holidays'     => $planData['include_holidays'] ?? false,
+                        'exclude_holidays'     => $planData['exclude_holidays'] ?? false,
                         'preventive_maintenance_per_year' => $planData['preventive_maintenance_per_year'] ?? 0,
-                        'case_support'                    => $planData['case_support'] ?? 'Unlimited case support',
-                        'cta_text'                        => $planData['cta_text'] ?? 'Contact Now',
-                        'display_order'                   => $planData['display_order'] ?? 0,
-                        'is_active'                       => true,
+                        'case_support'         => $planData['case_support'] ?? 'Unlimited case support',
+                        'cta_text'             => $planData['cta_text'] ?? 'Contact Now',
+                        'display_order'        => $planData['display_order'] ?? 0,
+                        'is_active'            => true,
                     ]);
                 }
 
-                // ------------------ FEATURES ------------------
+                // FEATURES
                 $existingFeatureIds = $plan->features()->pluck('id')->toArray();
                 $incomingFeatureIds = array_column($planData['features'], 'id');
                 $toDeleteFeatures = array_diff($existingFeatureIds, $incomingFeatureIds);
@@ -121,7 +195,7 @@ class SupportSystemController extends Controller
                 }
             }
 
-            // ------------------ OPTIONS ------------------
+            // OPTIONS
             $existingOptionIds = SupportOption::pluck('id')->toArray();
             $incomingOptionIds = array_column($request->options, 'id');
             $toDeleteOptions = array_diff($existingOptionIds, $incomingOptionIds);
@@ -147,29 +221,8 @@ class SupportSystemController extends Controller
         });
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Support system updated successfully',
         ]);
-    }
-
-    // DELETE individual plan
-    public function destroyPlan($id)
-    {
-        SupportPlan::findOrFail($id)->delete();
-        return response()->json(['status' => true, 'message' => 'Plan deleted']);
-    }
-
-    // DELETE individual option
-    public function destroyOption($id)
-    {
-        SupportOption::findOrFail($id)->delete();
-        return response()->json(['status' => true, 'message' => 'Option deleted']);
-    }
-
-    // DELETE individual feature
-    public function destroyFeature($id)
-    {
-        SupportPlanFeature::findOrFail($id)->delete();
-        return response()->json(['status' => true, 'message' => 'Feature deleted']);
     }
 }

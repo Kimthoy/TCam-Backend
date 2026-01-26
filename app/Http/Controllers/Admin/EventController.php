@@ -12,34 +12,32 @@ class EventController extends Controller
     /**
      * List events
      */
-public function index()
-{
-    $events = Event::latest()->paginate(10);
+    public function index()
+    {
+        $events = Event::latest()->paginate(10);
 
-    $events->getCollection()->transform(function ($event) {
-        return [
-            'id' => $event->id,
-            'title' => $event->title,
-            'subtitle' => $event->subtitle,
-            'event_date' => $event->event_date,
-            'location' => $event->location,
-            'category' => $event->category,
-            'poster_image' => $event->poster_image,
-            'poster_image_url' => $event->poster_image_url, // accessor used here
-            'description' => $event->description,
-            'participants' => json_decode($event->participants[0] ?? '[]'), // decode properly
-            'certifications' => json_decode($event->certifications[0] ?? '[]'),
-            'certificates' => json_decode($event->certificates[0] ?? '[]'),
-            'is_published' => $event->is_published,
-            'created_at' => $event->created_at,
-            'updated_at' => $event->updated_at,
-        ];
-    });
+        $events->getCollection()->transform(function ($event) {
+            return [
+                'id' => $event->id,
+                'title' => $event->title,
+                'subtitle' => $event->subtitle,
+                'event_date' => $event->event_date,
+                'location' => $event->location,
+                'category' => $event->category,
+                'poster_image' => $event->poster_image,
+                'poster_image_url' => $event->poster_image_url,
+                'description' => $event->description,
+                'participants' => json_decode($event->participants[0] ?? '[]'),
+                'certifications' => json_decode($event->certifications[0] ?? '[]'),
+                'certificates' => json_decode($event->certificates[0] ?? '[]'),
+                'is_published' => $event->is_published,
+                'created_at' => $event->created_at,
+                'updated_at' => $event->updated_at,
+            ];
+        });
 
-    return response()->json($events);
-}
-
-
+        return response()->json($events);
+    }
 
     /**
      * Store new event
@@ -60,7 +58,6 @@ public function index()
             'is_published'   => 'boolean',
         ]);
 
-        // Handle poster image upload
         if ($request->hasFile('poster_image')) {
             $data['poster_image'] = $request->file('poster_image')
                 ->store('events/posters', 'public');
@@ -77,16 +74,20 @@ public function index()
     /**
      * Show single event
      */
-    public function show(Event $event)
+    public function show($id)
     {
+        $event = Event::findOrFail($id);
+
         return response()->json($event);
     }
 
     /**
      * Update event
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $id)
     {
+        $event = Event::findOrFail($id);
+
         $data = $request->validate([
             'title'          => 'sometimes|required|string|max:255',
             'subtitle'       => 'nullable|string|max:255',
@@ -101,7 +102,6 @@ public function index()
             'is_published'   => 'boolean',
         ]);
 
-        // Replace poster image if uploaded
         if ($request->hasFile('poster_image')) {
             if ($event->poster_image) {
                 Storage::disk('public')->delete($event->poster_image);
@@ -122,8 +122,10 @@ public function index()
     /**
      * Delete event
      */
-    public function destroy(Event $event)
+    public function destroy($id)
     {
+        $event = Event::findOrFail($id);
+
         if ($event->poster_image) {
             Storage::disk('public')->delete($event->poster_image);
         }

@@ -16,7 +16,7 @@ class Product extends Model
     protected $appends = ['feature_image_url'];
 
     protected $casts = [
-        'price'        => 'decimal:2',
+    
         'is_published' => 'boolean',
     ];
 

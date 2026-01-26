@@ -16,7 +16,7 @@ return new class extends Migration {
                 ->onDelete('cascade');
             $table->text('short_description')->nullable();
             $table->longText('description')->nullable();
-            $table->decimal('price', 12, 2)->nullable();
+          
             $table->string('feature_image')->nullable(); // e.g. uploads/products/123.jpg
             $table->boolean('is_published')->default(true);
             $table->softDeletes();
