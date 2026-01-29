@@ -28,5 +28,5 @@ return [
     'max_age' => 0,
 
     // CRITICAL: JWT DOES NOT USE COOKIES → MUST BE FALSE
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 ];
